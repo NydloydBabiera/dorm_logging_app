@@ -12,7 +12,7 @@
           hover
           variant="outline-primary"
           class="ml-5"
-          >Add Tenant</b-button
+          >Add Tenant</b-button     
         >
       </b-input-group>
 
@@ -152,8 +152,7 @@ export default {
   },
   created() {
     this.fetchAllTenants();
-  },
-};
+  },     
 </script>
 
 <style scoped>

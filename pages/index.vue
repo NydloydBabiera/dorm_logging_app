@@ -3,7 +3,7 @@
 </template>
 
 <script>
-import TenantRegistration from '~/components/TenantRegistration.vue'
+import TenantRegistration from './TenantRegistration.vue'
 
 export default {
   components: { TenantRegistration },

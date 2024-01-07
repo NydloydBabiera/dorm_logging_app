@@ -1,7 +1,7 @@
 export default {
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
-    title: 'dorm_logging_app',
+    title: 'Dorm Logging App',
     htmlAttrs: {
       lang: 'en'
     },
@@ -31,11 +31,11 @@ export default {
 
   // Global CSS: https://go.nuxtjs.dev/config-css
   css: [
-    "@fortawesome/fontawesome-svg-core/styles.css",
+    '@fortawesome/fontawesome-free/css/all.css',
   ],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
-  plugins: [],
+  plugins: ["~/plugins/fontawesome.js"],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
   components: true,

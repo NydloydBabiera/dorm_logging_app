@@ -1,9 +1,12 @@
 <template>
   <div class="shadow p-3 mb-5 bg-white rounded" id="tableBody">
+
+
     <h1>Tenant Registration</h1>
     <div class="headerParam">
+
       <b-input-group prepend="Search" class="mt-3">
-        <b-form-input v-model="inputSearch" @keyup.enter="fetchAllTenants()"></b-form-input>
+        <b-form-input v-model="inputSearch" @keyup="fetchAllTenants()"/>
         <b-button @click="onAddUser()" hover variant="outline-primary" class="ml-5">Add Tenant</b-button>
       </b-input-group>
       <!-- modal -->
@@ -68,40 +71,44 @@
       <!-- guardian modal start -->
       <b-modal class="guardianModal" id="guardianModal" :title="guardianModalTitle" no-close-on-backdrop hide-footer
         centered>
-        <b-form @submit="onSaveUser">
-          <b-row class="mx-auto mt-2">
-            <b-form-input v-model="guardianInfo.first_name" type="text" debounce="500" placeholder="First name"
-              required></b-form-input>
-          </b-row>
-          <b-row class="mx-auto mt-2">
-            <b-form-input v-model="guardianInfo.middle_name" type="text" debounce="500" placeholder="Middle name"
-              required></b-form-input>
-          </b-row>
-          <b-row class="mx-auto mt-2">
-            <b-form-input v-model="guardianInfo.last_name" type="text" debounce="500" placeholder="Last name"
-              required></b-form-input>
-          </b-row>
-          <b-row class="mx-auto mt-2">
-            <b-form-input v-model="guardianInfo.contact_no" type="text" debounce="500" placeholder="Contact No."
-              required></b-form-input>
-          </b-row>
-          <hr class="mt-4" />
-          <div class="w-100">
-            <b-button variant="primary" class="float-right ml-1" type="submit">
-              <!-- <font-awesome-icon :icon="['fas', 'floppy-disk']" /> Save User -->
-              SAVE
+        <b-overlay :show="loadingOnSave" rounded="sm">
+          <b-form @submit="onSaveUser">
+            <b-row class="mx-auto mt-2">
+              <b-form-input v-model="guardianInfo.first_name" type="text" debounce="500" placeholder="First name"
+                required></b-form-input>
+            </b-row>
+            <b-row class="mx-auto mt-2">
+              <b-form-input v-model="guardianInfo.middle_name" type="text" debounce="500" placeholder="Middle name"
+                required></b-form-input>
+            </b-row>
+            <b-row class="mx-auto mt-2">
+              <b-form-input v-model="guardianInfo.last_name" type="text" debounce="500" placeholder="Last name"
+                required></b-form-input>
+            </b-row>
+            <b-row class="mx-auto mt-2">
+              <b-form-input v-model="guardianInfo.contact_no" type="text" debounce="500" placeholder="Contact No."
+                required></b-form-input>
+            </b-row>
+            <hr class="mt-4" />
+            <div class="w-100">
+              <b-button variant="primary" class="float-right ml-1" type="submit">
+                <!-- <font-awesome-icon :icon="['fas', 'floppy-disk']" /> Save User -->
+                SAVE
 
-            </b-button>
-            <b-button @click="$bvModal.hide('guardianModal')" class="float-right">
-              CANCEL
-              <!-- <font-awesome-icon :icon="['fas', 'xmark']" /> Cancel -->
-            </b-button>
-          </div>
+              </b-button>
+              <b-button @click="$bvModal.hide('guardianModal')" class="float-right">
+                CANCEL
+                <!-- <font-awesome-icon :icon="['fas', 'xmark']" /> Cancel -->
+              </b-button>
+            </div>
 
-        </b-form>
+          </b-form>
 
+        </b-overlay>
       </b-modal>
+
       <!-- modal end -->
+
     </div>
     <div class="dataBody">
       <!-- data table start -->
@@ -128,10 +135,9 @@
       id="alert-message">
       {{ alert.message }}
     </b-alert>
-    
     <!-- <b-spinner small v-show="loadingOnSave" /> -->
+
   </div>
-  
 </template>
 <script>
 import axios from "axios";
@@ -202,7 +208,6 @@ export default {
       };
     },
     onAddUser() {
-      this.loadingOnSave = true;
       this.userInfo = {
         first_name: "",
         middle_name: "",
@@ -235,7 +240,7 @@ export default {
     },
     onSaveUser(e) {
       e.preventDefault();
-      // this.loadingOnSave = true;
+      this.loadingOnSave = true;
       this.$bvModal
         .msgBoxConfirm("Are you sure you want to Save user details?", {
           title: "Please Confirm",
@@ -248,8 +253,9 @@ export default {
           centered: true,
         })
         .then((value) => {
-          if (value) this.doSaveUser();
-          this.loadingOnSave = false;
+          // if (value)
+          // //   this.doSaveUser();
+          // // this.loadingOnSave = false;
         })
         .catch((err) => {
           this.loadingOnSave = false;
@@ -287,7 +293,7 @@ export default {
           }`,
         data,
       }).then(() => {
-        this.$bvModal.hide("userModal");
+        this.$bvModal.hide("guardian");
         this.showAlert(
           `Successfully ${this.action == "add" ? "added" : "updated"} user.`,
           "success"
@@ -303,16 +309,15 @@ export default {
         url: `${this.$axios.defaults.baseURL}/user/getAllUser`,
       }).then(
         (res) => {
-          return this.tenantList = res.data
-          // this.tenantList = res.data.filter(
-          //   function (val) {
-          //     return (
-          //       val.first_name.includes(this.inputSearch) ||
-          //       val.middle_name.includes(this.inputSearch) ||
-          //       val.last_name.includes(this.inputSearch)
-          //     );
-          //   }.bind(this)
-          // );
+
+          // return this.tenantList = res.data
+          this.tenantList = res.data.filter(
+            function (val) {
+              return (
+                val.full_name.includes(this.inputSearch)
+              );
+            }.bind(this)
+          );
         },
         (err) => {
           console.log("ERROR:", err);

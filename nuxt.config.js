@@ -22,20 +22,16 @@ export default {
         content: 'telephone=no'
       }
     ],
-    link: [{
-      rel: 'icon',
-      type: 'image/x-icon',
-      href: '/favicon.ico'
-    }]
+    link: []
   },
 
   // Global CSS: https://go.nuxtjs.dev/config-css
   css: [
-    '@fortawesome/fontawesome-free/css/all.css',
+    
   ],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
-  plugins: ["~/plugins/fontawesome.js"],
+  plugins: [],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
   components: true,

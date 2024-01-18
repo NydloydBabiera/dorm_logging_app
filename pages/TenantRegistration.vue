@@ -6,7 +6,7 @@
     <div class="headerParam">
 
       <b-input-group prepend="Search" class="mt-3">
-        <b-form-input v-model="inputSearch" @keyup="fetchAllTenants()"/>
+        <b-form-input v-model="inputSearch" @keyup="fetchAllTenants()" />
         <b-button @click="onAddUser()" hover variant="outline-primary" class="ml-5">Add Tenant</b-button>
       </b-input-group>
       <!-- modal -->
@@ -114,13 +114,15 @@
       <!-- data table start -->
       <b-table hover bordered :items="tenantList" :fields="tblHeaderCol" :per-page="perPage" :current-page="currentPage"
         head-variant="light">
-        <template #cell(action)="">
-          <b-button size="sm">
+        <template #cell(action)="row">
+          <b-button @click="onUpdateUser(row.item)" size="sm" class="admin__action_btn" variant="success"
+            title="Edit user details">
             EDIT
             <!-- <font-awesome-icon :icon="['fas', 'pen-to-square']" /> -->
           </b-button>
 
-          <b-button size="sm">
+          <b-button size="sm" class="admin__action_btn" variant="danger" title="Edit user details"
+            @click="onDeleteUser(row.item)">
             DELETE
             <!-- <font-awesome-icon :icon="['fas', 'arrow-rotate-right']" /> -->
           </b-button>
@@ -153,6 +155,7 @@ export default {
       tenantList: [],
       userModalTitle: "",
       guardianModalTitle: "",
+      selectedUserId: "",
       currentPage: 1,
       perPage: 5,
       loadingOnSave: false,
@@ -163,6 +166,8 @@ export default {
         { key: "full_name", label: "Name" },
         { key: "city_address", label: "Address" },
         { key: "gender", label: "Gender" },
+        { key: "guardian_full_name", label: "Guardian" },
+        { key: "contactno", label: "Contact" },
         { key: "action", label: "Actions" },
       ],
       userInfo: {
@@ -231,6 +236,73 @@ export default {
       this.action = "add";
 
     },
+    onUpdateUser(item) {
+      this.selectedUserId = item.user_id;
+      let userGender;
+      if (item.gender == "M" || item.gender == "MALE") {
+        userGender = "M"
+      } else {
+        userGender = "F"
+      }
+
+      this.userInfo = {
+        first_name: item.first_name,
+        middle_name: item.middle_name,
+        last_name: item.last_name,
+        address_line1: item.address_line1,
+        address_line2: item.address_line2,
+        city_address: item.city_address,
+        provincial_address: item.provincial_address,
+        regional_address: item.regional_address,
+        country: item.country,
+        gender: userGender
+      };
+      this.guardianInfo = {
+        first_name: item.guardian_first_name,
+        middle_name: item.guardian_middle_name,
+        last_name: item.guardian_last_name,
+        contact_no: item.contactno
+      }
+
+      this.userModalTitle = "Edit Details";
+      this.$bvModal.show("userModal");
+      this.action = "edit"
+    },
+    onDeleteUser(item) {
+      this.selectedUserId = item.user_id;
+      console.log("selectedUserId:", this.selectedUserId);
+      this.loadingOnSave = true;
+      this.$bvModal
+        .msgBoxConfirm("Are you sure you want to DELETE user details?", {
+          title: "Please Confirm",
+          size: "sm",
+          buttonSize: "sm",
+          okVariant: "primary",
+          okTitle: "YES",
+          cancelTitle: "NO",
+          footerClass: "p-2",
+          centered: true,
+        }).then((value) => {
+          if (value)
+            this.doDeleteUser();
+          this.loadingOnSave = false;
+        }).catch((err) => {
+          this.loadingOnSave = false;
+          this.showAlert(err, "danger");
+        });
+    },
+
+    async doDeleteUser() {
+      await axios({
+        method: `DELETE`,
+        url: `${this.$axios.defaults.baseURL}/user/deleteUser/${this.selectedUserId}`,
+      }).then((res) => {
+        this.fetchAllTenants();
+        return res.data;
+      }, (err) => {
+        console.log("ERROR:", err)
+      })
+    },
 
     addGuardianDetails(e) {
       e.preventDefault();
@@ -253,9 +325,10 @@ export default {
           centered: true,
         })
         .then((value) => {
-          // if (value)
-          // //   this.doSaveUser();
-          // // this.loadingOnSave = false;
+          if (value)
+            this.doSaveUser();
+          this.loadingOnSave = false;
+          this.$bvModal.hide("guardianModal")
         })
         .catch((err) => {
           this.loadingOnSave = false;
@@ -264,7 +337,7 @@ export default {
     },
     async doSaveUser() {
       const isAdd = this.action == "add";
-      const data = isAdd ? {
+      const data = {
         projCode: "DORM",
         userDetails: {
           firstName: this.userInfo.first_name,
@@ -286,10 +359,10 @@ export default {
           contactNo: this.guardianInfo.contact_no
         }
 
-      } : {};
+      }
       await axios({
         method: `${isAdd ? "POST" : "PUT"}`,
-        url: `${this.$axios.defaults.baseURL}/user/${isAdd ? "addUser" : `updateUser/${this.user.userId}`
+        url: `${this.$axios.defaults.baseURL}/user/${isAdd ? "addUser" : `updateUser/${this.selectedUserId}`
           }`,
         data,
       }).then(() => {
@@ -306,12 +379,12 @@ export default {
     async fetchAllTenants() {
       return await axios({
         method: "GET",
-        url: `${this.$axios.defaults.baseURL}/user/getAllUser`,
+        url: `${this.$axios.defaults.baseURL}/user/getAllUser/dorm`,
       }).then(
         (res) => {
 
-          // return this.tenantList = res.data
-          this.tenantList = res.data.filter(
+          // return this.tenantList = res.data.data
+          this.tenantList = res.data.data.filter(
             function (val) {
               return (
                 val.full_name.includes(this.inputSearch)

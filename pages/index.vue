@@ -1,12 +1,13 @@
 <template>
-  <tenant-registration/>
+  <!-- <tenant-registration/> -->
+  <dorm-logs />
 </template>
 
 <script>
 import TenantRegistration from './TenantRegistration.vue'
-
+import DormLogs from './DormLogs.vue'
 export default {
-  components: { TenantRegistration },
-    name: 'IndexPage',
+  components: { DormLogs },
+  name: 'IndexPage',
 }
 </script>

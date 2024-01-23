@@ -5,7 +5,14 @@
 </template>
 <script>
 export default{
-    name: "DormLogs"
+    name: "DormLogs",
+    data(){
+      return{
+        tblData:[
+          
+        ]
+      }
+    }
 }
 </script>
 

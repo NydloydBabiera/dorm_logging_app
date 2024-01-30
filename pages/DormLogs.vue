@@ -1,6 +1,6 @@
 <template>
     <div class="shadow p-3 mb-5 bg-white rounded" id="tableBody">
-
+      <b-table hover bordered :items="tenantLogs" :fields="tblHeaderCol"></b-table>
     </div>
 </template>
 <script>
@@ -8,9 +8,12 @@ export default{
     name: "DormLogs",
     data(){
       return{
-        tblData:[
-          
-        ]
+        tblHeaderCol:[
+          {key: "full_name", label: "Name"},
+          {key: "time_in", label: "IN"},
+          {key: "time_out", label: "OUT"}
+        ],
+        tenantLogs: [],
       }
     }
 }

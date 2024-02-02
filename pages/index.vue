@@ -1,6 +1,6 @@
 <template>
-  <!-- <tenant-registration/> -->
-  <dorm-logs />
+  <!-- <dorm-logs /><tenant-registration/> -->
+  <dorm-logs/>
 </template>
 
 <script>

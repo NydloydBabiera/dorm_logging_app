@@ -26,6 +26,10 @@
               required></b-form-input>
           </b-row>
           <b-row class="mx-auto mt-2">
+            <b-form-input v-model="userInfo.contact_no" type="text" debounce="500" placeholder="Contact no."
+              required></b-form-input>
+          </b-row>
+          <b-row class="mx-auto mt-2">
             <b-form-select id="select-role" v-model="userInfo.gender" :options="optionRole" required>
               <template #first>
                 <b-form-select-option :value="selected" disabled>-- Gender --</b-form-select-option>

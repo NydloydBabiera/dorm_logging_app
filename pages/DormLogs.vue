@@ -17,8 +17,8 @@ export default {
     return {
       tblHeaderCol: [
         { key: "fullname", lasheeeel: "Name" },
-        { key: "time_in", label: "IN" },
-        { key: "time_out", label: "OUT" },
+        { key: "time_in", label: "OUT" },
+        { key: "time_out", label: "IN" },
         { key: "activity_date", label: "DATE" },
       ],
       tenantLogs: [],

@@ -10,7 +10,7 @@
                         aria-required="true" required></b-form-input>
                 </b-row>
                 <b-row class="mx-auto mt-2">
-                    <b-form-input v-model="userPassword" type="text" debounce="500" placeholder="Password/Guardian's Contact No."
+                    <b-form-input v-model="userPassword" type="password" debounce="500" placeholder="Password/Guardian's Contact No."
                         aria-required="true" required></b-form-input>
                 </b-row>
                 <hr class="mt-4">
@@ -19,10 +19,12 @@
                 </b-row>
 
             </b-form>
+            <b-spinner v-show="loadingOnSave" variant="success" label="Spinning"></b-spinner>
         </div>
 
-
+       
     </div>
+   
 </template>
 
 <script>
@@ -34,7 +36,11 @@ export default {
             userName: "",
             userPassword: "",
             projectCode: "",
+            loadingOnSave: false,
         }
+    },
+    mounted(){
+        localStorage.role = "";
     },
     methods: {
         showAlert(message, variant) {
@@ -48,6 +54,7 @@ export default {
         },
         async userLogin(e) {
             e.preventDefault();
+            this.loadingOnSave = true;
             await axios({
                 method: "POST",
                 url: `${this.$axios.defaults.baseURL}/user/authenticate`,
@@ -73,8 +80,9 @@ export default {
         },
 
         loginActions(results) {
-
             console.log("results",results.role_user)
+            localStorage.role = results.role_user;
+            localStorage.tenantId = results.user_id;
             let role = results.role_user;
             this.$nextTick(() => {
                 if (role.toLowerCase() == "admin") {

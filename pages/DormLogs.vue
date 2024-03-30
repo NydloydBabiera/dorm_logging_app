@@ -46,6 +46,7 @@ export default {
   },
   created() {
     this.fetchAllLogs();
+    
   },
 };
 </script>

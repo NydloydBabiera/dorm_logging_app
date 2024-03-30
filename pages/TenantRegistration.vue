@@ -135,6 +135,7 @@
 
       <!-- data table end -->
       <b-pagination v-model="currentPage" :total-rows="rows" :per-page="perPage" aria-controls="my-table"></b-pagination>
+      <b-button @click="viewLogs()" hover variant="outline-primary" class="ml-5">View Tenant Logs</b-button>
     </div>
 
     <b-alert :show="alert.showAlert" dismissible :variant="alert.variant" @dismissed="alert.showAlert = null"
@@ -148,6 +149,7 @@
 <script>
 import axios from "axios";
 import { log } from "console";
+import io from 'socket.io-client';
 export default {
   name: "TenantRegistration",
   data() {
@@ -163,6 +165,7 @@ export default {
       currentPage: 1,
       perPage: 5,
       loadingOnSave: false,
+      newTenantId: "",
       tblHeaderCol: [
         // { key: "first_name", label: "First Name" },
         // { key: "middle_name", label: "Middle Name" },
@@ -185,6 +188,7 @@ export default {
         regional_address: "",
         country: "",
         gender: "",
+        contact_no: "",
       },
 
       alert: {
@@ -204,6 +208,7 @@ export default {
         { value: "M", text: "Male" },
         { value: "F", text: "Female" },
       ],
+      socket: null
     };
   },
   methods: {
@@ -215,6 +220,9 @@ export default {
         variant,
         message,
       };
+    },
+    viewLogs() {
+      this.$router.push({ path: "/DormLogs" });
     },
     onAddUser() {
       this.userInfo = {
@@ -238,6 +246,7 @@ export default {
       this.userModalTitle = "Add Tenant";
       this.$bvModal.show("userModal");
       this.action = "add";
+
 
     },
     onUpdateUser(item) {
@@ -354,6 +363,7 @@ export default {
           regionalAddress: this.userInfo.regional_address,
           country: this.userInfo.country,
           gender: this.userInfo.gender,
+          contactno: this.userInfo.contact_no
 
         },
         guardianDetails: {
@@ -369,13 +379,17 @@ export default {
         url: `${this.$axios.defaults.baseURL}/user/${isAdd ? "addUser" : `updateUser/${this.selectedUserId}`
           }`,
         data,
-      }).then(() => {
+      }).then((res) => {
         this.$bvModal.hide("guardian");
+        this.newTenantId = res.data.newUserDetails.user_id;
+        console.log("res:", res.data.newUserDetails.user_id);
         this.showAlert(
           `Successfully ${this.action == "add" ? "added" : "updated"} user.`,
           "success"
         );
         this.fetchAllTenants();
+
+        this.sendDataToESP8266();
       }, (err) => {
         this.showAlert(err.response.data.errorMsg, "danger");
       });
@@ -401,9 +415,35 @@ export default {
         }
       );
     },
+    async sendDataToESP8266() {
+      const data = {
+        // Your data payload
+        id: this.newTenantId
+      };
+
+      // Make a POST request to the ESP8266 server
+      await fetch(`${this.$axios.defaults.HARDWARE_URL}/data`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'text/plain'
+        },
+        body: JSON.stringify(data)
+      })
+        .then(response => {
+          // Handle response if needed
+          console.log('Data sent successfully');
+        })
+        .catch(error => {
+          // Handle error if any
+          console.error('Error sending data:', error);
+        });
+    }
   },
   created() {
     this.fetchAllTenants();
+
+
+
   },
   computed: {
     rows() {

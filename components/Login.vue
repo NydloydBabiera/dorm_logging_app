@@ -6,12 +6,12 @@
             <h5>LOGIN</h5>
             <b-form @submit="userLogin">
                 <b-row class="mx-auto">
-                    <b-form-input v-model="userName" type="text" debounce="500" placeholder="Username/Student's last name"
-                        aria-required="true" required></b-form-input>
+                    <b-form-input v-model="userName" type="text" debounce="500"
+                        placeholder="Username/Student's last name" aria-required="true" required></b-form-input>
                 </b-row>
                 <b-row class="mx-auto mt-2">
-                    <b-form-input v-model="userPassword" type="password" debounce="500" placeholder="Password/Guardian's Contact No."
-                        aria-required="true" required></b-form-input>
+                    <b-form-input v-model="userPassword" type="password" debounce="500"
+                        placeholder="Password/Guardian's Contact No." aria-required="true" required></b-form-input>
                 </b-row>
                 <hr class="mt-4">
                 <b-row class="mx-auto mt-2">
@@ -22,9 +22,9 @@
             <b-spinner v-show="loadingOnSave" variant="success" label="Spinning"></b-spinner>
         </div>
 
-       
+
     </div>
-   
+
 </template>
 
 <script>
@@ -39,8 +39,9 @@ export default {
             loadingOnSave: false,
         }
     },
-    mounted(){
+    mounted() {
         localStorage.role = "";
+        localStorage.user_id = 0;
     },
     methods: {
         showAlert(message, variant) {
@@ -80,14 +81,15 @@ export default {
         },
 
         loginActions(results) {
-            console.log("results",results.role_user)
+            console.log("results", results.role_user)
             localStorage.role = results.role_user;
-            localStorage.tenantId = results.user_id;
+            localStorage.setItem('role', results.role_user)
             let role = results.role_user;
             this.$nextTick(() => {
                 if (role.toLowerCase() == "admin") {
                     this.$router.push({ path: "/TenantRegistration" });
-                }else{
+                } else {
+                    localStorage.user_id = results.user_id;
                     this.$router.push({ path: "/DormLogs" });
                 }
             })

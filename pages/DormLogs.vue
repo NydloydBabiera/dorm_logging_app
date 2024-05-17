@@ -1,12 +1,7 @@
 <template>
   <div class="shadow p-3 mb-5 bg-white rounded" id="tableBody">
     <h1>Tenant Logs</h1>
-    <b-table
-      hover
-      bordered
-      :items="tenantLogs"
-      :fields="tblHeaderCol"
-    ></b-table>
+    <b-table hover bordered :items="tenantLogs" :fields="tblHeaderCol"></b-table>
   </div>
 </template>
 <script>
@@ -22,7 +17,17 @@ export default {
         { key: "activity_date", label: "DATE" },
       ],
       tenantLogs: [],
+      role: "",
+      user_id: ""
     };
+  },
+  mounted() {
+    this.role = localStorage.role;
+    this.user_id = localStorage.user_id
+
+    setTimeout(() => {
+      this.fetchAllLogs();
+    }, 1000);
   },
   methods: {
     async fetchAllLogs() {
@@ -31,22 +36,24 @@ export default {
         url: `${this.$axios.defaults.baseURL}/activityLogs/getAllLogs`,
       }).then(
         (res) => {
-          this.tenantLogs = res.data;
+          // const role = localStorage.role;
+          if (this.role != "admin") {
+            console.log("user_id", this.user_id)
+            this.tenantLogs = res.data.filter(val => val.user_id == this.user_id);
+          }
+          else {
+            console.log("role", this.role)
+            this.tenantLogs = res.data
+          }
         },
         (err) => {
           console.log("ERROR:", err);
         }
       );
     },
-    // socketEvents() {
-    //   // this.$_socket.on('logs', (data) => {
-    //   //   console.log(data)
-    //   // });
-    // },
   },
   created() {
-    this.fetchAllLogs();
-    
+
   },
 };
 </script>
@@ -57,4 +64,4 @@ export default {
   margin: 40px 50px 50px;
   /* border: 1px solid black; */
 }
-</style> 
+</style>

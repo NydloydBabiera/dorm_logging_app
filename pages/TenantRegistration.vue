@@ -4,117 +4,56 @@
     <div class="headerParam">
       <b-input-group prepend="Search" class="mt-3">
         <b-form-input v-model="inputSearch" @keyup="fetchAllTenants()" />
-        <b-button
-          @click="onAddUser()"
-          hover
-          variant="outline-primary"
-          class="ml-5"
-          >Add Tenant</b-button
-        >
+        <b-form-input v-model="curfewTime" disabled/>
+        <b-button @click="onAddUser()" hover variant="outline-primary" class="ml-5">Add Tenant</b-button>
       </b-input-group>
       <!-- modal -->
       <!-- User Modal -->
-      <b-modal
-        class="userModal"
-        id="userModal"
-        :title="userModalTitle"
-        no-close-on-backdrop
-        hide-footer
-        centered
-      >
+      <b-modal class="userModal" id="userModal" :title="userModalTitle" no-close-on-backdrop hide-footer centered>
         <b-form @submit="addGuardianDetails">
           <b-row class="mx-auto">
-            <b-form-input
-              v-model="userInfo.first_name"
-              type="text"
-              debounce="500"
-              placeholder="First name"
-              aria-required="true"
-              required
-            ></b-form-input>
+            <b-form-input v-model="userInfo.first_name" type="text" debounce="500" placeholder="First name"
+              aria-required="true" required></b-form-input>
           </b-row>
           <b-row class="mx-auto mt-2">
-            <b-form-input
-              v-model="userInfo.middle_name"
-              type="text"
-              debounce="500"
-              placeholder="Middle name"
-              required
-            ></b-form-input>
+            <b-form-input v-model="userInfo.middle_name" type="text" debounce="500" placeholder="Middle name"
+              required></b-form-input>
           </b-row>
           <b-row class="mx-auto mt-2">
-            <b-form-input
-              v-model="userInfo.last_name"
-              type="text"
-              debounce="500"
-              placeholder="Last name"
-              required
-            ></b-form-input>
+            <b-form-input v-model="userInfo.last_name" type="text" debounce="500" placeholder="Last name"
+              required></b-form-input>
           </b-row>
           <b-row class="mx-auto mt-2">
-            <b-form-input
-              v-model="userInfo.contact_no"
-              type="text"
-              debounce="500"
-              placeholder="Contact no."
-              required
-            ></b-form-input>
+            <b-form-input v-model="userInfo.contact_no" type="text" debounce="500" placeholder="Contact no."
+              required></b-form-input>
           </b-row>
           <b-row class="mx-auto mt-2">
-            <b-form-select
-              id="select-role"
-              v-model="userInfo.gender"
-              :options="optionRole"
-              required
-            >
+            <b-form-select id="select-role" v-model="userInfo.gender" :options="optionRole" required>
               <template #first>
-                <b-form-select-option :value="selected" disabled
-                  >-- Gender --</b-form-select-option
-                >
+                <b-form-select-option :value="selected" disabled>-- Gender --</b-form-select-option>
               </template>
             </b-form-select>
           </b-row>
 
           <b-row class="mx-auto mt-2">
-            <b-form-input
-              v-model="userInfo.address_line1"
-              type="text"
-              debounce="500"
-              placeholder="Address line 1"
-            ></b-form-input>
+            <b-form-input v-model="userInfo.address_line1" type="text" debounce="500"
+              placeholder="Address line 1"></b-form-input>
           </b-row>
           <b-row class="mx-auto mt-2">
-            <b-form-input
-              v-model="userInfo.address_line2"
-              type="text"
-              debounce="500"
-              placeholder="Address line 2"
-            ></b-form-input>
+            <b-form-input v-model="userInfo.address_line2" type="text" debounce="500"
+              placeholder="Address line 2"></b-form-input>
           </b-row>
           <b-row class="mx-auto mt-2">
-            <b-form-input
-              v-model="userInfo.city_address"
-              type="text"
-              debounce="500"
-              placeholder="City Address"
-              required
-            ></b-form-input>
+            <b-form-input v-model="userInfo.city_address" type="text" debounce="500" placeholder="City Address"
+              required></b-form-input>
           </b-row>
           <b-row class="mx-auto mt-2">
-            <b-form-input
-              v-model="userInfo.provincial_address"
-              type="text"
-              debounce="500"
-              placeholder="Province"
-            ></b-form-input>
+            <b-form-input v-model="userInfo.provincial_address" type="text" debounce="500"
+              placeholder="Province"></b-form-input>
           </b-row>
           <b-row class="mx-auto mt-2">
-            <b-form-input
-              v-model="userInfo.regional_address"
-              type="text"
-              debounce="500"
-              placeholder="Region"
-            ></b-form-input>
+            <b-form-input v-model="userInfo.regional_address" type="text" debounce="500"
+              placeholder="Region"></b-form-input>
           </b-row>
           <hr class="mt-4" />
           <div class="w-100">
@@ -131,66 +70,33 @@
       </b-modal>
       <!-- user modal end -->
       <!-- guardian modal start -->
-      <b-modal
-        class="guardianModal"
-        id="guardianModal"
-        :title="guardianModalTitle"
-        no-close-on-backdrop
-        hide-footer
-        centered
-      >
+      <b-modal class="guardianModal" id="guardianModal" :title="guardianModalTitle" no-close-on-backdrop hide-footer
+        centered>
         <b-overlay :show="loadingOnSave" rounded="sm">
           <b-form @submit="onSaveUser">
             <b-row class="mx-auto mt-2">
-              <b-form-input
-                v-model="guardianInfo.first_name"
-                type="text"
-                debounce="500"
-                placeholder="First name"
-                required
-              ></b-form-input>
+              <b-form-input v-model="guardianInfo.first_name" type="text" debounce="500" placeholder="First name"
+                required></b-form-input>
             </b-row>
             <b-row class="mx-auto mt-2">
-              <b-form-input
-                v-model="guardianInfo.middle_name"
-                type="text"
-                debounce="500"
-                placeholder="Middle name"
-                required
-              ></b-form-input>
+              <b-form-input v-model="guardianInfo.middle_name" type="text" debounce="500" placeholder="Middle name"
+                required></b-form-input>
             </b-row>
             <b-row class="mx-auto mt-2">
-              <b-form-input
-                v-model="guardianInfo.last_name"
-                type="text"
-                debounce="500"
-                placeholder="Last name"
-                required
-              ></b-form-input>
+              <b-form-input v-model="guardianInfo.last_name" type="text" debounce="500" placeholder="Last name"
+                required></b-form-input>
             </b-row>
             <b-row class="mx-auto mt-2">
-              <b-form-input
-                v-model="guardianInfo.contact_no"
-                type="text"
-                debounce="500"
-                placeholder="Contact No."
-                required
-              ></b-form-input>
+              <b-form-input v-model="guardianInfo.contact_no" type="text" debounce="500" placeholder="Contact No."
+                required></b-form-input>
             </b-row>
             <hr class="mt-4" />
             <div class="w-100">
-              <b-button
-                variant="primary"
-                class="float-right ml-1"
-                type="submit"
-              >
+              <b-button variant="primary" class="float-right ml-1" type="submit">
                 <!-- <font-awesome-icon :icon="['fas', 'floppy-disk']" /> Save User -->
                 SAVE
               </b-button>
-              <b-button
-                @click="$bvModal.hide('guardianModal')"
-                class="float-right"
-              >
+              <b-button @click="$bvModal.hide('guardianModal')" class="float-right">
                 CANCEL
                 <!-- <font-awesome-icon :icon="['fas', 'xmark']" /> Cancel -->
               </b-button>
@@ -203,34 +109,17 @@
     </div>
     <div class="dataBody">
       <!-- data table start -->
-      <b-table
-        hover
-        bordered
-        :items="tenantList"
-        :fields="tblHeaderCol"
-        :per-page="perPage"
-        :current-page="currentPage"
-        head-variant="light"
-      >
+      <b-table hover bordered :items="tenantList" :fields="tblHeaderCol" :per-page="perPage" :current-page="currentPage"
+        head-variant="light">
         <template #cell(action)="row">
-          <b-button
-            @click="onUpdateUser(row.item)"
-            size="sm"
-            class="admin__action_btn"
-            variant="success"
-            title="Edit user details"
-          >
+          <b-button @click="onUpdateUser(row.item)" size="sm" class="admin__action_btn" variant="success"
+            title="Edit user details">
             EDIT
             <!-- <font-awesome-icon :icon="['fas', 'pen-to-square']" /> -->
           </b-button>
 
-          <b-button
-            size="sm"
-            class="admin__action_btn"
-            variant="danger"
-            title="Edit user details"
-            @click="onDeleteUser(row.item)"
-          >
+          <b-button size="sm" class="admin__action_btn" variant="danger" title="Edit user details"
+            @click="onDeleteUser(row.item)">
             DELETE
             <!-- <font-awesome-icon :icon="['fas', 'arrow-rotate-right']" /> -->
           </b-button>
@@ -238,33 +127,16 @@
       </b-table>
 
       <!-- data table end -->
-      <b-pagination
-        v-model="currentPage"
-        :total-rows="rows"
-        :per-page="perPage"
-        aria-controls="my-table"
-      ></b-pagination>
-      <b-button @click="viewLogs()" hover variant="outline-primary" class="ml-5"
-        >View Tenant Logs</b-button
-      >
-      <b-button
-        @click="onSetCurfew()"
-        hover
-        variant="outline-primary"
-        class="ml-5"
-        >Set Curfew Time</b-button
-      >
+      <b-pagination v-model="currentPage" :total-rows="rows" :per-page="perPage"
+        aria-controls="my-table"></b-pagination>
+      <b-button @click="viewLogs()" hover variant="outline-primary" class="ml-5">View Tenant Logs</b-button>
+      <b-button @click="onSetCurfew()" hover variant="outline-primary" class="ml-5">Set Curfew Time</b-button>
+
       <!-- curfew modal start -->
-      <b-modal
-        class="setCurfewModal"
-        id="curfewModal"
-        :title="curfewModalTitle"
-        no-close-on-backdrop
-        hide-footer
-        centered
-      >
+      <b-modal class="setCurfewModal" id="curfewModal" :title="curfewModalTitle" no-close-on-backdrop hide-footer
+        centered>
         <b-overlay :show="loadingOnSave" rounded="sm">
-          <b-form @submit="onSaveUser">
+          <b-form @submit="onSaveCurfew">
             <b-row class="mx-auto mt-2">
               <!-- <b-form-input
                 v-model="curfewDetails.curfewTime"
@@ -273,25 +145,15 @@
                 placeholder="Curfew Time"
                 required
               ></b-form-input> -->
-              <b-form-timepicker
-                v-model="curfewDetails.curfewTime"
-                placeholder="Choose a time"
-                locale="en"
-              ></b-form-timepicker>
+              <b-form-timepicker v-model="curfewDetails.curfewTime" placeholder="Choose a time"
+                locale="en"></b-form-timepicker>
             </b-row>
             <hr class="mt-4" />
             <div class="w-100">
-              <b-button
-                variant="primary"
-                class="float-right ml-1"
-                type="submit"
-              >
+              <b-button variant="primary" class="float-right ml-1" type="submit">
                 SAVE
               </b-button>
-              <b-button
-                @click="$bvModal.hide('curfewModal')"
-                class="float-right"
-              >
+              <b-button @click="$bvModal.hide('curfewModal')" class="float-right">
                 CANCEL
               </b-button>
             </div>
@@ -302,13 +164,8 @@
       <!-- modal end -->
     </div>
 
-    <b-alert
-      :show="alert.showAlert"
-      dismissible
-      :variant="alert.variant"
-      @dismissed="alert.showAlert = null"
-      id="alert-message"
-    >
+    <b-alert :show="alert.showAlert" dismissible :variant="alert.variant" @dismissed="alert.showAlert = null"
+      id="alert-message">
       {{ alert.message }}
     </b-alert>
     <!-- <b-spinner small v-show="loadingOnSave" /> -->
@@ -325,6 +182,7 @@ export default {
       items: [],
       action: "",
       inputSearch: "",
+      curfewTime: "",
       show: false,
       tenantList: [],
       userModalTitle: "",
@@ -518,9 +376,10 @@ export default {
           centered: true,
         })
         .then((value) => {
-          if (value) this.doSaveUser();
+          if (value) this.doSaveCurfew();
           this.loadingOnSave = false;
           this.$bvModal.hide("guardianModal");
+
         })
         .catch((err) => {
           this.loadingOnSave = false;
@@ -542,7 +401,7 @@ export default {
           centered: true,
         })
         .then((value) => {
-          if (value) this.doSaveCurfew();
+          if (value) this.doSaveUser();
           this.loadingOnSave = false;
           this.$bvModal.hide("curfewModal");
         })
@@ -553,9 +412,9 @@ export default {
     },
     async doSaveCurfew() {
       const data = {
-          curfewTime: this.curfewDetails.curfewTime,
-          description: "DORM",
-        
+        curfewTime: this.curfewDetails.curfewTime,
+        description: "DORM",
+
       };
       await axios({
         method: "POST",
@@ -564,6 +423,7 @@ export default {
       }).then(
         (res) => {
           this.$bvModal.hide("curfewModal");
+          this.getCurfewTime();
           console.log(res);
         },
         (err) => {
@@ -597,9 +457,8 @@ export default {
       };
       await axios({
         method: `${isAdd ? "POST" : "PUT"}`,
-        url: `${this.$axios.defaults.baseURL}/user/${
-          isAdd ? "addUser" : `updateUser/${this.selectedUserId}`
-        }`,
+        url: `${this.$axios.defaults.baseURL}/user/${isAdd ? "addUser" : `updateUser/${this.selectedUserId}`
+          }`,
         data,
       }).then(
         (res) => {
@@ -637,6 +496,21 @@ export default {
         }
       );
     },
+    async getCurfewTime() {
+      return await axios({
+        method: "GET",
+        url: `${this.$axios.defaults.baseURL}/activityLogs/getCurfewSched`,
+      }).then(
+        (res) => {
+          // return this.tenantList = res.data.data
+          this.curfewTime = `Curfew: ${res.data[0].curfew_time}`
+          console.log(res.data[0].curfew_time)
+        },
+        (err) => {
+          console.log("ERROR:", err);
+        }
+      );
+    },
     async sendDataToESP8266() {
       const data = {
         // Your data payload
@@ -663,6 +537,7 @@ export default {
   },
   created() {
     this.fetchAllTenants();
+    this.getCurfewTime();
   },
   computed: {
     rows() {

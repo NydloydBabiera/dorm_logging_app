@@ -41,19 +41,19 @@
           </b-row>
           <b-row class="mx-auto mt-2">
             <b-form-input v-model="userInfo.address_line2" type="text" debounce="500"
-              placeholder="Address line 2"></b-form-input>
+              placeholder="Province"></b-form-input>
           </b-row>
           <b-row class="mx-auto mt-2">
-            <b-form-input v-model="userInfo.city_address" type="text" debounce="500" placeholder="City Address"
+            <b-form-input v-model="userInfo.city_address" type="text" debounce="500" placeholder="Room no."
               required></b-form-input>
           </b-row>
           <b-row class="mx-auto mt-2">
             <b-form-input v-model="userInfo.provincial_address" type="text" debounce="500"
-              placeholder="Province"></b-form-input>
+              placeholder="ID number"></b-form-input>
           </b-row>
           <b-row class="mx-auto mt-2">
             <b-form-input v-model="userInfo.regional_address" type="text" debounce="500"
-              placeholder="Region"></b-form-input>
+              placeholder="Course"></b-form-input>
           </b-row>
           <hr class="mt-4" />
           <div class="w-100">
@@ -340,9 +340,13 @@ export default {
     },
 
     async doDeleteUser() {
+      const data = {
+        projCode: "DORM"
+      }
       await axios({
         method: `DELETE`,
         url: `${this.$axios.defaults.baseURL}/user/deleteUser/${this.selectedUserId}`,
+        data
       }).then(
         (res) => {
           this.fetchAllTenants();

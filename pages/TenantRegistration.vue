@@ -32,11 +32,18 @@
                 </template>
               </b-form-select>
             </b-row>
-            <!-- <b-row class="mx-auto mt-2">
+            <b-row class="mx-auto mt-2">
               <b-form-input v-model="userInfo.contact_no" type="text" debounce="500" placeholder="Contact no."
                 required></b-form-input>
-            </b-row> -->
-           
+            </b-row>
+            <b-row class="mx-auto mt-2">
+              <b-form-input v-model="userInfo.course" type="text" debounce="500" placeholder="Course"
+                required></b-form-input>
+            </b-row>
+            <b-row class="mx-auto mt-2">
+              <b-form-input v-model="userInfo.year" type="text" debounce="500" placeholder="Year"
+                required></b-form-input>
+            </b-row>
             <b-row class="mx-auto mt-2">
               <b-form-input v-model="userInfo.address_line1" type="text" debounce="500"
                 placeholder="Lot no., Blk, Barangay"></b-form-input>
@@ -54,8 +61,11 @@
                 placeholder="ID number"></b-form-input>
             </b-row> -->
             <b-row class="mx-auto mt-2">
-              <b-form-input v-model="userInfo.regional_address" type="text" debounce="500"
-                placeholder="Course"></b-form-input>
+              <b-form-select id="select-role" v-model="userInfo.userRole" :options="userRole" required>
+                <template #first>
+                  <b-form-select-option :value="selected" disabled>-- User Type --</b-form-select-option>
+                </template>
+              </b-form-select>
             </b-row>
             <hr class="mt-4" />
             <div class="w-100">
@@ -223,6 +233,7 @@ export default {
         country: "",
         gender: "",
         contact_no: "",
+        userRole:"",
       },
       curfewDetails: {
         curfewTime: "",
@@ -244,6 +255,11 @@ export default {
       optionRole: [
         { value: "M", text: "Male" },
         { value: "F", text: "Female" },
+      ],
+      userRole: [
+        { value: "ADMIN", text: "ADMIN" },
+        { value: "STUDENT", text: "STUDENT" },
+        { value: "TEACHER", text: "TEACHER" },
       ],
       socket: null,
     };
@@ -277,7 +293,11 @@ export default {
         provincial_address: "",
         regional_address: "",
         country: "",
+        contactNo: "",
         gender: "",
+        roleUser: "",
+        course: "",
+        year: "",
       };
       this.guardianInfo = {
         first_name: "",
@@ -458,6 +478,9 @@ export default {
           country: this.userInfo.country,
           gender: this.userInfo.gender,
           contacno: this.userInfo.contact_no,
+          course: this.userInfo.course,
+          year: this.userInfo.year,
+          roleUser: this.userInfo.userRole,
         },
         guardianDetails: {
           firstName: this.guardianInfo.first_name,
@@ -548,7 +571,7 @@ export default {
   },
   created() {
     this.fetchAllTenants();
-    this.getCurfewTime();
+    // this.getCurfewTime();
   },
   computed: {
     rows() {

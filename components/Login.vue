@@ -2,16 +2,16 @@
     <div id="root">
         <div class="shadow p-3 mb-5 bg-white rounded" id="login">
 
-            <h4>MONITORING SYSTEM FOR USM DORMITORY STUDENTS</h4>
+            <h4>STUDENT ATTENDANCE MONITORING</h4>
             <h5>LOGIN</h5>
             <b-form @submit="userLogin">
                 <b-row class="mx-auto">
                     <b-form-input v-model="userName" type="text" debounce="500"
-                        placeholder="Username/Student's last name" aria-required="true" required></b-form-input>
+                        placeholder="Username" aria-required="true" required></b-form-input>
                 </b-row>
                 <b-row class="mx-auto mt-2">
                     <b-form-input v-model="userPassword" type="password" debounce="500"
-                        placeholder="Password/Guardian's Contact No." aria-required="true" required></b-form-input>
+                        placeholder="Password" aria-required="true" required></b-form-input>
                 </b-row>
                 <hr class="mt-4">
                 <b-row class="mx-auto mt-2">
@@ -62,7 +62,7 @@ export default {
                 data: {
                     userName: this.userName,
                     userPassword: this.userPassword,
-                    projectCode: "DORM"
+                    projectCode: "STUDENT"
                 },
             }).then(
                 (res) => {
@@ -101,6 +101,8 @@ export default {
 
 <style scoped>
 #root {
+
+    background-color: #6ff55b;
     text-align: center;
     margin: auto;
 }

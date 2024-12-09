@@ -1,35 +1,90 @@
 <template>
-  <div>
-    <b-button v-b-toggle.sidebar-no-header>Toggle Sidebar</b-button>
-    <b-sidebar
-      id="sidebar-no-header"
-      aria-labelledby="sidebar-no-header-title"
-      no-header
-      shadow
-    >
-      <template #default="{ hide }">
-        <div class="p-3">
-          <h4 id="sidebar-no-header-title">Custom header sidebar</h4>
-          <p>
-            Cras mattis consectetur purus sit amet fermentum. Cras justo odio,
-            dapibus ac facilisis in, egestas eget quam. Morbi leo risus, porta
-            ac consectetur ac, vestibulum at eros.
-          </p>
-          <nav class="mb-3">
-            <b-nav vertical>
-              <b-nav-item active @click="hide">Active</b-nav-item>
-              <b-nav-item href="#link-1" @click="hide">Link</b-nav-item>
-              <b-nav-item href="#link-2" @click="hide">Another Link</b-nav-item>
-            </b-nav>
-          </nav>
-        </div>
-      </template>
-    </b-sidebar>
+  <div class="sideBar">
+    <ul>
+      <li>Student Logging <br /><sub>1.0.0</sub></li>
+      <hr />
+
+      <li v-for="(item, index) in modules" :key="index"  @click="onClickItem(item)">
+        <div>{{ item.moduleName }}</div>
+      </li>
+    </ul>
   </div>
 </template>
 
-  <script>
+<script>
 export default {
   name: "SideBar",
+  data() {
+    return {
+      modules: [
+        {
+          id: 1,
+          moduleName: "Students",
+          path: "/TenantRegistration",
+          title: "Students",
+          code: "students"
+        },
+        {
+          id: 2,
+          moduleName: "Subjects",
+          path: "/SubjectRegistration",
+          title: "Subjects",
+           code: "Subjects"
+        },
+        {
+          id: 3,
+          moduleName: "Schedule",
+          path: "/ScheduleRegistration",
+          title: "Schedule",
+           code: "Schedule"
+          
+        },
+        {
+          id: 4,
+          moduleName: "StudentSchedule",
+          path: "/StudentSchedule",
+          title: "Student Schedule",
+           code: "StudentSchedule"
+          
+        }
+      ]
+    }
+  },
+  methods:{
+    onClickItem(item) {
+      // this.setActiveModule(item.code);
+      if (item.code != "logout") {
+        this.$router.push({ path: item.path });
+        return;
+      }
+
+      // this.showMsgBoxConfirmation();
+    },
+  }
 };
 </script>
+
+<style>
+.sideBar {
+  position: fixed;
+  background: whitesmoke;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  transition: 0.1s ease;
+  width: 200px;
+}
+
+ul {
+  list-style-type: none;
+}
+
+li {
+  text-align: center;
+  align-items: center;
+  margin-bottom: 30px;
+  transition: 0.1s ease;
+  padding: 20px 0px;
+  cursor: pointer;
+}
+</style>

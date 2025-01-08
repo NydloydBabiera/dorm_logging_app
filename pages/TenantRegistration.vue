@@ -41,16 +41,14 @@
                 required></b-form-input>
             </b-row>
             <b-row class="mx-auto mt-2">
-              <b-form-input v-model="userInfo.year" type="text" debounce="500" placeholder="Year"
-                required></b-form-input>
+              <b-form-input v-model="userInfo.year" type="text" debounce="500" placeholder="Year" required></b-form-input>
             </b-row>
             <b-row class="mx-auto mt-2">
               <b-form-input v-model="userInfo.address_line1" type="text" debounce="500"
                 placeholder="Lot no., Blk, Barangay"></b-form-input>
             </b-row>
             <b-row class="mx-auto mt-2">
-              <b-form-input v-model="userInfo.city_address" type="text" debounce="500"
-                placeholder="City"></b-form-input>
+              <b-form-input v-model="userInfo.city_address" type="text" debounce="500" placeholder="City"></b-form-input>
             </b-row>
             <!-- <b-row class="mx-auto mt-2">
               <b-form-input v-model="userInfo.city_address" type="text" debounce="500" placeholder="Room no."
@@ -61,11 +59,17 @@
                 placeholder="ID number"></b-form-input>
             </b-row> -->
             <b-row class="mx-auto mt-2">
-              <b-form-select id="select-role" v-model="userInfo.userRole" :options="userRole" required>
+              <b-form-select id="select-role" v-model="userInfo.userRole" :options="userRole" @change="onRoleChange"
+                required>
                 <template #first>
                   <b-form-select-option :value="selected" disabled>-- User Type --</b-form-select-option>
                 </template>
               </b-form-select>
+            </b-row>
+
+            <b-row class="mx-auto mt-2">
+              <b-form-input v-model="userInfo.rfid" type="text" debounce="500"
+                :placeholder="dynamicPlaceholder"></b-form-input>
             </b-row>
             <hr class="mt-4" />
             <div class="w-100">
@@ -120,8 +124,8 @@
       </div>
       <div class="dataBody">
         <!-- data table start -->
-        <b-table hover bordered :items="tenantList" :fields="tblHeaderCol" :per-page="perPage"
-          :current-page="currentPage" head-variant="light">
+        <b-table hover bordered :items="tenantList" :fields="tblHeaderCol" :per-page="perPage" :current-page="currentPage"
+          head-variant="light">
           <template #cell(action)="row">
             <b-button @click="onUpdateUser(row.item)" size="sm" class="admin__action_btn" variant="success"
               title="Edit user details">
@@ -142,6 +146,10 @@
           aria-controls="my-table"></b-pagination>
         <!-- <b-button @click="viewLogs()" hover variant="outline-primary" class="ml-5">View Tenant Logs</b-button> -->
         <!-- <b-button @click="onSetCurfew()" hover variant="outline-primary" class="ml-5">Set Curfew Time</b-button> -->
+        <b-modal class="scanFingerModal" id="scanFingerModal" :title="guardianModalTitle" no-close-on-backdrop
+          hide-footer centered>
+          {{ fingerPrintStatus }}
+        </b-modal>
 
         <!-- curfew modal start -->
         <b-modal class="setCurfewModal" id="curfewModal" :title="curfewModalTitle" no-close-on-backdrop hide-footer
@@ -184,6 +192,7 @@
   </div>
 </template>
 <script>
+import { throws } from "assert";
 import axios from "axios";
 import { log } from "console";
 import io from "socket.io-client";
@@ -196,6 +205,7 @@ export default {
   data() {
     return {
       items: [],
+      fingerPrintStatus: "",
       action: "",
       inputSearch: "",
       curfewTime: "",
@@ -233,7 +243,7 @@ export default {
         country: "",
         gender: "",
         contact_no: "",
-        userRole:"",
+        userRole: "",
       },
       curfewDetails: {
         curfewTime: "",
@@ -261,10 +271,62 @@ export default {
         { value: "STUDENT", text: "STUDENT" },
         { value: "TEACHER", text: "TEACHER" },
       ],
-      socket: null,
+      socket: null, ws: null, // WebSocket instance
+      messages: [], // Array to store messages
+      placeholders: {   // Placeholders for each role
+        STUDENT: 'Tap RFID...',
+        TEACHER: 'Place finger to register...',
+      },
     };
   },
   methods: {
+    connectWebSocket() {
+      const esp32WebSocketURL = `ws://192.168.43.109/ws`; // ESP32 WebSocket URL
+      this.ws = new WebSocket(esp32WebSocketURL);
+
+      // WebSocket connection opened
+      this.ws.onopen = () => {
+        console.log("WebSocket connected to ESP32");
+        this.messages.push("WebSocket connected to ESP32");
+      };
+
+      // Receiving messages from ESP32
+      this.ws.onmessage = (event) => {
+        console.log("Message received from ESP32:", event.data);
+        this.userInfo.rfid = event.data
+        // if (this.userInfo.roleUser == "STUDENT") {
+        //   console.log("reached here")
+        //   this.userInfo.rfid = event.data
+          
+        // } else {
+        //   this.fingerPrintStatus = event.data
+        //   this.$bvModal.hide("scanFingerModal")
+        // }
+
+        this.fingerPrintStatus = event.data
+        this.messages.push(event.data); // Add message to the array
+      };
+
+      // WebSocket connection closed
+      this.ws.onclose = () => {
+        console.log("WebSocket disconnected");
+        this.messages.push("WebSocket disconnected");
+      };
+
+      // WebSocket error
+      this.ws.onerror = (error) => {
+        console.error("WebSocket error:", error);
+        this.messages.push("WebSocket error");
+      };
+    },
+    sendCommand(command) {
+      if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+        console.log("Sending command to ESP32:", command);
+        this.ws.send(command);
+      } else {
+        console.error("WebSocket is not connected.");
+      }
+    },
     showAlert(message, variant) {
       this.alert = {
         showAlert: 5,
@@ -298,6 +360,7 @@ export default {
         roleUser: "",
         course: "",
         year: "",
+        rfid: "",
       };
       this.guardianInfo = {
         first_name: "",
@@ -481,6 +544,7 @@ export default {
           course: this.userInfo.course,
           year: this.userInfo.year,
           roleUser: this.userInfo.userRole,
+          rfid: this.userInfo.rfid
         },
         guardianDetails: {
           firstName: this.guardianInfo.first_name,
@@ -568,14 +632,46 @@ export default {
           console.error("Error sending data:", error);
         });
     },
+
+    // Send command to ESP32 when role changes
+    onRoleChange() {
+      if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+        const command = JSON.stringify({
+          command: "ROLE_SELECTED",
+          payload: this.userInfo.userRole,
+        });
+        console.log("Sending command to ESP32:", command);
+        this.ws.send(command);
+        this.messages.push(`Command sent: ROLE_SELECTED -> ${this.selectedRole}`);
+      } else {
+        console.error("WebSocket is not connected.");
+        this.messages.push("Failed to send command: WebSocket not connected.");
+      }
+    },
   },
   created() {
     this.fetchAllTenants();
     // this.getCurfewTime();
   },
+  mounted() {
+    this.connectWebSocket(); // Establish WebSocket connection when the component is mounted
+  },
   computed: {
     rows() {
       return this.tenantList.length;
+    },
+    dynamicPlaceholder() {
+      if(this.userInfo.userRole === "TEACHER"){
+       this.guardianModalTitle = "Scan finger print"
+       
+      // this.$bvModal.show("scanFingerModal")
+      }
+      if(this.userInfo.userRole === "STUDENT"){
+       this.guardianModalTitle = "Tap RFID"
+       
+      // this.$bvModal.show("scanFingerModal")
+      }
+      return this.placeholders[this.userInfo.userRole] || 'Enter value...';
     },
   },
 };

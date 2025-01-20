@@ -19,7 +19,7 @@ export default {
       modules: [
         {
           id: 1,
-          moduleName: "Students",
+          moduleName: "Registration",
           path: "/TenantRegistration",
           title: "Students",
           code: "students"
@@ -45,6 +45,14 @@ export default {
           path: "/StudentSchedule",
           title: "Student Schedule",
            code: "StudentSchedule"
+          
+        },
+        {
+          id: 4,
+          moduleName: "Attendance",
+          path: "/Attendance",
+          title: "Student Attendance",
+           code: "Attendance"
           
         }
       ]

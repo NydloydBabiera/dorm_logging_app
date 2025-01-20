@@ -281,7 +281,7 @@ export default {
   },
   methods: {
     connectWebSocket() {
-      const esp32WebSocketURL = `ws://192.168.43.109/ws`; // ESP32 WebSocket URL
+      const esp32WebSocketURL = `ws://192.168.68.103/ws`; // ESP32 IP
       this.ws = new WebSocket(esp32WebSocketURL);
 
       // WebSocket connection opened
@@ -364,7 +364,7 @@ export default {
       };
       this.guardianInfo = {
         first_name: "",
-        middle_name: "",
+        middle_name: "",  
         last_name: "",
         contact_no: "",
       };

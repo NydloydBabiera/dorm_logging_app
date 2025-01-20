@@ -52,6 +52,7 @@
                         <b-form-input v-model="scheduleDetails.room" type="text" debounce="500"
                             placeholder="Room assignment" required></b-form-input>
                     </b-row>
+                    
                     <hr class="mt-4" />
                     <div class="w-100">
                         <b-button variant="primary" class="float-right ml-1" type="submit">

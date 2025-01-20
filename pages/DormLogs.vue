@@ -58,7 +58,7 @@ export default {
 };
 </script>
 
-<style scoped>
+<style scoped> run 
 #tableBody {
   text-align: center;
   margin: 40px 50px 50px;
